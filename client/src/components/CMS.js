@@ -54,7 +54,7 @@ const CMS = (props) => {
                         props.setItems((items) => tempItems);
                         //localStorage.setItem("items", JSON.stringify(tempItems));
                         props.showAlert(itemName + " added successfully.", "success");
-                        props.GrabAllItems(sessionStorage.getItem("token"));
+                        props.GrabAllItems(sessionStorage.getItem("token"), props.userEmail);
                         setSearchWords((searchWords) => []);
                         setImages((images) => []);
                         clearForm();
@@ -104,7 +104,7 @@ const CMS = (props) => {
                         setSearchWords((searchWords) => []);
                         setImages((images) => []);
                         props.showAlert(tempItems[Number(selectedItem)].itemName + " updated.", "success");
-                        props.GrabAllItems(sessionStorage.getItem("token"));
+                        props.GrabAllItems(sessionStorage.getItem("token"), props.userEmail);
                     }
                 }
             )
@@ -143,7 +143,7 @@ const CMS = (props) => {
                 props.setItems((items) => tempItems);
                 //localStorage.setItem("items", JSON.stringify(tempItems));
                 props.showAlert("Item Deleted.", "success");
-                props.GrabAllItems(sessionStorage.getItem("token"));
+                props.GrabAllItems();
                 clearForm();
                 setToggle((toggle) => "");
             }, (error) => {
