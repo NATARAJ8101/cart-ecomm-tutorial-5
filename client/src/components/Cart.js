@@ -96,6 +96,8 @@ const Cart = (props) => {
                             // localStorage.setItem("purchaseLog", JSON.stringify(tempCart));
                             props.setCartList((cartList) => []);
                             props.showAlert("Purchase Submitted!", "success");
+
+                            props.GrabAllItems(sessionStorage.getItem("token"), props.userEmail);
                             setToggle((toggle) => "");
                         }
                     }, (error) => {
