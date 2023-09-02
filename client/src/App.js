@@ -146,11 +146,16 @@ function App() {
   }
 
   //CLIENT SIDE GET ALL ITEMS
-  const GrabAllItems = () => {
+  const GrabAllItems = (tokenPass) => {
 
+    const pass = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenPass}`
+      }
+    }
 
-
-    axios.get("/api/items/all-items/", config).then(
+    axios.get("/api/items/all-items/", pass).then(
       (res) => {
         if (res.data.success === 0) {
           showAlert("That didn't work: " + res.data.message, "danger");
@@ -213,7 +218,7 @@ function App() {
       setCheckedToken((setCheckedToken) => true);
       setUserEmail((userEmail) => email);
       sessionStorage.setItem("email", email);
-      GrabAllItems();
+      GrabAllItems(tokenPass);
 
     } else {
       console.log("Validate user success 0 here!");
