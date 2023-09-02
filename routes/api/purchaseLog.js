@@ -20,7 +20,8 @@ router.get("/ordersFrom/:timeFrame", checkToken, (req, res) => {
 
 //SERVER SIDE GET PURCHASE FROM SPECIFIC USER
 router.get("/ordersFromUser/:email", checkToken, (req, res) => {
-    let sql = `SELECT * FROM purchaseLog WHERE saleId LIKE '%${req.params.email + ":"}%'`;
+    let prepEmail = req.params.email + ":";
+    let sql = `SELECT * FROM purchaseLog WHERE saleId LIKE '%${prepEmail}%'`;
     let query = db.query(sql, (err, results) => {
         if (err) {
             console.log("Error: " + err);
