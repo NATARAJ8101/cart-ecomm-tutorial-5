@@ -95,54 +95,59 @@ const LeaveReview = (props) => {
         if (loaded === false && props.selectedItem.itemName) {
 
 
-            //determin if user has bought this item
-            //START CLIENT SIDE GET PURCHASE LOG DATA BASE ON TIME SELECTED
-            axios.get("/api/purchaseLog/ordersFromUser/" + props.userEmail, props.config).then(
+            axios.get("/api/reviews/" + props.selectedItem.itemName).then(
                 (res) => {
-                    // console.log("res.data: " + JSON.stringify(res.data))
 
+                    let tempRatingList = [];
 
                     for (let i = 0; i < res.data.length; i++) {
-                        if (props.userEmail === res.data[i].saleId.substring(0, res.data[i].saleId.indexOf(":")) && props.selectedItem.itemName === res.data[i].itemName) {
-
-                            setShowReviewBt((showReviewBt) => true);
-                        }
-                    }
 
 
-                    axios.get("/api/reviews/" + props.selectedItem.itemName).then(
-                        (res) => {
+                        tempRatingList.push(res.data[i].rating);
 
-                            let tempRatingList = [];
+                        res.data[i].comment = decodeURIComponent(res.data[i].comment);
+                        if (props.userEmail === res.data[i].email) {
 
-                            for (let i = 0; i < res.data.length; i++) {
-
-
-                                tempRatingList.push(res.data[i].rating);
-
-                                res.data[i].comment = decodeURIComponent(res.data[i].comment);
-                                if (props.userEmail === res.data[i].email) {
-                                    document.querySelector("[name='comment']").value = "Your comment: " + res.data[i].comment;
-                                    setStar((star) => res.data[i].rating);
-                                    document.getElementById("reviewBT").classList.add("hide");
-                                }
-                                console.log("JSON.stringify(res.data[i]): " + JSON.stringify(res.data[i]));
+                            try {
+                                document.querySelector("[name='comment']").value = "Your comment: " + res.data[i].comment;
+                                document.getElementById("reviewBT").classList.add("hide");
+                            } catch (error) {
+                                console.error("No comments yet: " + error);
+                                // Expected output: ReferenceError: nonExistentFunction is not defined
+                                // (Note: the exact output may be browser-dependent)
                             }
-                            setReviews((reviews) => res.data);
-                            setAllRatings((allRatings) => tempRatingList);
-                            sendReviewAverage("loading");
 
 
-                        },
-                        (error) => {
-                            console.log(error);
-                            props.showAlert("Reviews did not make it: " + error, "danger");
+
+                            setStar((star) => res.data[i].rating);
+
                         }
-                    );
-                }, (error) => {
-                    props.showAlert("That did not work.", "danger");
+                        console.log("JSON.stringify(res.data[i]): " + JSON.stringify(res.data[i]));
+                    }
+                    setReviews((reviews) => res.data);
+                    setAllRatings((allRatings) => tempRatingList);
+                    sendReviewAverage("loading");
+
+
+                },
+                (error) => {
+                    console.log(error);
+                    props.showAlert("Reviews did not make it: " + error, "danger");
                 }
-            )
+            );
+
+
+
+            //loop through users purchases to see if they bought selected item
+            for (let i = 0; i < props.userPurchases.length; i++) {
+                if (props.userEmail === props.userPurchases[i].saleId.substring(0, props.userPurchases[i].saleId.indexOf(":")) && props.selectedItem.itemName === props.userPurchases[i].itemName) {
+
+                    setShowReviewBt((showReviewBt) => true);
+                }
+            }
+
+
+
 
 
 
