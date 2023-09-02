@@ -39,7 +39,7 @@ const LeaveReview = (props) => {
                         props.showAlert("That did not work", "danger");
                     } else {
                         props.showAlert("Your review has been posted.", "success");
-                        props.GrabAllItems(sessionStorage.getItem("token"));
+                        props.GrabAllItems();
                     }
                 }, (error) => {
                     props.showAlert("That did not work: " + error, "danger");
@@ -73,7 +73,8 @@ const LeaveReview = (props) => {
                     (res) => {
                         sendReviewAverage(star);
                         props.showAlert("Success submitting review.", "success");
-                        setStar((star) => null);
+                        // setStar((star) => null);
+                        document.getElementById("reviewBT").disabled = true;
                         commentField.value = "";
                     },
                     (error) => {
@@ -95,7 +96,7 @@ const LeaveReview = (props) => {
         if (loaded === false && props.selectedItem.itemName) {
 
 
-            axios.get("/api/reviews/" + props.selectedItem.itemName).then(
+            axios.get("/api/reviews/" + props.selectedItem.itemName, props.config).then(
                 (res) => {
 
                     let tempRatingList = [];
@@ -112,6 +113,7 @@ const LeaveReview = (props) => {
                                 document.querySelector("[name='comment']").value = "Your comment: " + res.data[i].comment;
                                 document.getElementById("reviewBT").classList.add("hide");
                             } catch (error) {
+
                                 console.error("No comments yet: " + error);
                                 // Expected output: ReferenceError: nonExistentFunction is not defined
                                 // (Note: the exact output may be browser-dependent)
@@ -120,6 +122,7 @@ const LeaveReview = (props) => {
 
 
                             setStar((star) => res.data[i].rating);
+                            //  setShowReviewBt((showReviewBt) => true);
 
                         }
                         console.log("JSON.stringify(res.data[i]): " + JSON.stringify(res.data[i]));
@@ -141,8 +144,11 @@ const LeaveReview = (props) => {
             //loop through users purchases to see if they bought selected item
             for (let i = 0; i < props.userPurchases.length; i++) {
                 if (props.userEmail === props.userPurchases[i].saleId.substring(0, props.userPurchases[i].saleId.indexOf(":")) && props.selectedItem.itemName === props.userPurchases[i].itemName) {
-
+                    console.log("YOU DID BUY: " + props.userPurchases[i].saleId.substring(0, props.userPurchases[i].saleId.indexOf(":")) + " : " + props.userPurchases[i].itemName)
                     setShowReviewBt((showReviewBt) => true);
+                } else {
+                    console.log("You did not buy " + props.selectedItem.itemName)
+
                 }
             }
 
