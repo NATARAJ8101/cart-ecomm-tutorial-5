@@ -133,12 +133,11 @@ function App() {
   const obtainUserPurchases = () => {
     //determin if user has bought this item
     //START CLIENT SIDE GET PURCHASE LOG DATA BASE ON TIME SELECTED
+
     axios.get("/api/purchaseLog/ordersFromUser/" + userEmail, config).then(
       (res) => {
-        // console.log("res.data: " + JSON.stringify(res.data))
-
+        console.log("res.data: " + JSON.stringify(res.data))
         setUserPurchases((userPurchases) => res.data);
-
 
       }, (error) => {
         showAlert("That did not work.", "danger");
@@ -147,16 +146,11 @@ function App() {
   }
 
   //CLIENT SIDE GET ALL ITEMS
-  const GrabAllItems = (theToken) => {
-    axios.get("/api/items/all-items/",
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ` + theToken
-        }
-      }
+  const GrabAllItems = () => {
 
-    ).then(
+
+
+    axios.get("/api/items/all-items/", config).then(
       (res) => {
         if (res.data.success === 0) {
           showAlert("That didn't work: " + res.data.message, "danger");
@@ -196,8 +190,9 @@ function App() {
               }
             }
             obtainUserPurchases();
+            setItems((items) => res.data);
           }
-          setItems((items) => res.data);
+
 
 
         }
@@ -218,7 +213,7 @@ function App() {
       setCheckedToken((setCheckedToken) => true);
       setUserEmail((userEmail) => email);
       sessionStorage.setItem("email", email);
-      GrabAllItems(tokenPass);
+      GrabAllItems();
 
     } else {
       console.log("Validate user success 0 here!");
@@ -363,11 +358,11 @@ function App() {
         <React.Fragment>
           <Nav setActiveModule={setActiveModule} activeModule={activeModule} userEmail={userEmail} cartLength={cartList.length} />
           <div className="container my-1">
-            {activeModule === "cms" ? <CMS showAlert={showAlert} config={config} items={items} setItems={setItems} GrabAllItems={GrabAllItems} /> : null}
+            {activeModule === "cms" ? <CMS showAlert={showAlert} userEmail={userEmail} config={config} items={items} setItems={setItems} GrabAllItems={GrabAllItems} /> : null}
             {activeModule === "shop" ? <Shop showAlert={showAlert} items={items} setActiveModule={setActiveModule} setSelectedItem={setSelectedItem} /> : null}
             {activeModule === "productDetails" ? <ProductDetails userEmail={userEmail} config={config} showAlert={showAlert} selectedItem={selectedItem}
               setPurchaseQty={setPurchaseQty} submitToCart={submitToCart} GrabAllItems={GrabAllItems} userPurchases={userPurchases} /> : null}
-            {activeModule === "cart" ? <Cart showAlert={showAlert} userEmail={userEmail} config={config} cartList={cartList} setCartList={setCartList} /> : null}
+            {activeModule === "cart" ? <Cart showAlert={showAlert} userEmail={userEmail} config={config} cartList={cartList} setCartList={setCartList} GrabAllItems={GrabAllItems} /> : null}
             {activeModule === "log" || activeModule === "analytics" ? <TimeSelector timeSearch={timeSearch} year={year} month={month} /> : null}
             {activeModule === "log" ? <PurchaseLog timeSelected={timeSelected} /> : null}
             {activeModule === "analytics" ? <PurchasingChart timeSelected={timeSelected} items={items} /> : null}
