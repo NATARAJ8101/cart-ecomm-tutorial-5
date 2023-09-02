@@ -148,12 +148,19 @@ function App() {
   //CLIENT SIDE GET ALL ITEMS
   const GrabAllItems = (tokenPass) => {
 
-    const pass = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenPass}`
+    if (sessionStorage.getItem("token")) {
+      tokenPass = sessionStorage.getItem("token");
+    }
+    let pass;
+    if ((typeof tokenPass) !== "object") {
+      pass = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenPass}`
+        }
       }
     }
+
 
     axios.get("/api/items/all-items/", pass).then(
       (res) => {
